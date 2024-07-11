@@ -24,7 +24,7 @@ struct Pos { // Pos Struct
 
 const OFFSETS: [Pos; 4] = [Pos{x: 0, y: -1}, Pos{x: 1, y: 0}, Pos{x: 0, y: 1}, Pos{x: -1, y: 0}];
 
-fn add_pos (a: &Pos, b: &Pos) -> Pos {
+fn add_pos (a: &Pos, b: &Pos) -> Pos { // Adds two pos's together
     return Pos{x: a.x + b.x, y: a.y + b.y};
 }
 
@@ -34,11 +34,12 @@ struct Cell {
     visited: bool
 }
 
-fn generate(map: &mut Vec<Vec<Cell>>, width: usize, height: usize) {
+fn generate(map: &mut Vec<Vec<Cell>>, width: usize, height: usize) { // Performs the wfc on map
     // Start cell
     let mut rng = rand::thread_rng();
     let mut prop_pos = Pos{x: rng.gen_range(0 ..= width - 1) as i32, y: rng.gen_range(0 ..= height - 1) as i32};
-    map[prop_pos.y as usize][prop_pos.x as usize].id = NUM_TILES; // Forces the first cell to be the last tile 
+    map[prop_pos.y as usize][prop_pos.x as usize].id = NUM_TILES; // Forces the first cell to be the last tile
+    // Nice for this specific tile set, comment out for other tile sets.
     loop {
         propagate(map, &prop_pos, width, height, true, &mut rng);
 
@@ -64,7 +65,7 @@ fn generate(map: &mut Vec<Vec<Cell>>, width: usize, height: usize) {
     }
 }
 
-fn propagate(map: &mut Vec<Vec<Cell>>, pos: &Pos, width: usize, height: usize, hard: bool, rng: &mut ThreadRng) {
+fn propagate(map: &mut Vec<Vec<Cell>>, pos: &Pos, width: usize, height: usize, hard: bool, rng: &mut ThreadRng) { // propagates change, if hard then choosing random possible tile
     if get_id(map, &pos, width, height) != 0 { return; }
     if !check_bounds(&pos, width, height) { return; }
     if map[pos.y as usize][pos.x as usize].visited { return; }
@@ -85,7 +86,7 @@ fn propagate(map: &mut Vec<Vec<Cell>>, pos: &Pos, width: usize, height: usize, h
     }
 }
 
-fn get_possibilities(map: &Vec<Vec<Cell>>, pos: &Pos, width: usize, height: usize) -> Vec<usize> {
+fn get_possibilities(map: &Vec<Vec<Cell>>, pos: &Pos, width: usize, height: usize) -> Vec<usize> { // returns vector of possible tile ids at pos
     let mut possibilities_mask: [bool; NUM_TILES] = [true; NUM_TILES];
     let mut possibilities:Vec<usize> = Vec::new();
     for tile in 0 .. NUM_TILES {
@@ -105,12 +106,12 @@ fn get_possibilities(map: &Vec<Vec<Cell>>, pos: &Pos, width: usize, height: usiz
     return possibilities;
 }
 
-fn get_id(map: &Vec<Vec<Cell>>, pos: &Pos, width: usize, height: usize) -> usize {
+fn get_id(map: &Vec<Vec<Cell>>, pos: &Pos, width: usize, height: usize) -> usize { // Returns tile id at pos
     if !check_bounds(pos, width, height) { return 0; }
     return map[pos.y as usize][pos.x as usize].id;
 }
 
-fn check_bounds(pos: &Pos, width: usize, height: usize) -> bool {
+fn check_bounds(pos: &Pos, width: usize, height: usize) -> bool { // Returns true if pos is in bounds
     return !(pos.x >= width as i32 || pos.x < 0 || pos.y >= height as i32 || pos.y < 0);
 }
 
